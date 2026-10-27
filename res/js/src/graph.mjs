@@ -1,13 +1,10 @@
 import { parseReferences } from "./parse.mjs"
 
-const DYNAMIC = /\{.*\}/
-
 export function buildGraph(files, { skipped = [] } = {}) {
   const nodes = new Map()
   const edgesByKey = new Map()
   const pathByName = new Map()
   const duplicates = []
-  const dynamics = []
   const callersByExternal = new Map()
   const kept = []
 
@@ -22,30 +19,21 @@ export function buildGraph(files, { skipped = [] } = {}) {
       continue
     }
 
-    nodes.set(file.name, { name: file.name, inZip: true, dynamic: false })
+    nodes.set(file.name, { name: file.name, inZip: true })
     pathByName.set(file.name, path)
     kept.push(file)
   }
 
   for (const file of kept) {
     for (const ref of parseReferences(file.text)) {
-      const { target, kind, line } = ref
+      const { target, kind } = ref
 
       if (!nodes.has(target)) {
-        const dynamic = DYNAMIC.test(target)
-        nodes.set(target, { name: target, inZip: false, dynamic })
-
-        if (!dynamic) callersByExternal.set(target, new Set())
+        nodes.set(target, { name: target, inZip: false })
+        callersByExternal.set(target, new Set())
       }
 
-      const node = nodes.get(target)
-
-      if (node.dynamic) {
-        dynamics.push({
-          type: "dynamic",
-          message: `"${target}" in ${file.name} (line ${line}) contains a variable, so the target cannot be resolved.`,
-        })
-      } else if (!node.inZip) {
+      if (!nodes.get(target).inZip) {
         callersByExternal.get(target).add(file.name)
       }
 
@@ -73,6 +61,6 @@ export function buildGraph(files, { skipped = [] } = {}) {
   return {
     nodes,
     edges: [...edgesByKey.values()],
-    warnings: [...duplicates, ...dynamics, ...externals, ...skips],
+    warnings: [...duplicates, ...externals, ...skips],
   }
 }

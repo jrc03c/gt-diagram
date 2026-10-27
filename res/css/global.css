@@ -139,10 +139,6 @@ code {
   border-style: dashed;
 }
 
-.swatch.dotted {
-  border-style: dotted;
-}
-
 .edge {
   display: inline-block;
   width: 26px;

@@ -14,8 +14,8 @@ test("two files, one call", () => {
     { name: "program_b", text: "Welcome!\n*question: What's your name?\n" },
   ])
   assert.deepEqual(nodeList(graph), [
-    { name: "program_a", inZip: true, dynamic: false },
-    { name: "program_b", inZip: true, dynamic: false },
+    { name: "program_a", inZip: true },
+    { name: "program_b", inZip: true },
   ])
   assert.deepEqual(graph.edges, [
     { from: "program_a", to: "program_b", kind: "program", count: 1 },
@@ -52,7 +52,6 @@ test("a referenced program missing from the zip becomes an external node with a 
   assert.deepEqual(graph.nodes.get("general consent form - public"), {
     name: "general consent form - public",
     inZip: false,
-    dynamic: false,
   })
   assert.deepEqual(graph.warnings, [
     {
@@ -63,23 +62,21 @@ test("a referenced program missing from the zip becomes an external node with a 
   ])
 })
 
-test("an interpolated target becomes a dynamic node with a warning", () => {
+test("a target with braces is a literal name, so it is just an external node", () => {
   const graph = buildGraph([
     { name: "a", path: "zip/a", text: "x\n*program: {nextProgram}\n" },
   ])
   assert.deepEqual(graph.nodes.get("{nextProgram}"), {
     name: "{nextProgram}",
     inZip: false,
-    dynamic: true,
   })
   assert.deepEqual(graph.edges, [
     { from: "a", to: "{nextProgram}", kind: "program", count: 1 },
   ])
   assert.deepEqual(graph.warnings, [
     {
-      type: "dynamic",
-      message:
-        '"{nextProgram}" in a (line 2) contains a variable, so the target cannot be resolved.',
+      type: "external",
+      message: '"{nextProgram}" is referenced by a but is not in the zip.',
     },
   ])
 })
@@ -101,9 +98,7 @@ test("duplicate program names keep the first file and warn", () => {
 
 test("isolated programs are still nodes", () => {
   const graph = buildGraph([{ name: "lonely", text: "Just text\n" }])
-  assert.deepEqual(nodeList(graph), [
-    { name: "lonely", inZip: true, dynamic: false },
-  ])
+  assert.deepEqual(nodeList(graph), [{ name: "lonely", inZip: true }])
   assert.deepEqual(graph.edges, [])
 })
 
@@ -123,16 +118,16 @@ test("skipped entries become warnings", () => {
   ])
 })
 
-test("warnings are ordered duplicate, dynamic, external, skipped", () => {
+test("warnings are ordered duplicate, external, skipped", () => {
   const graph = buildGraph(
     [
-      { name: "a", text: "*program: {v}\n*program: missing\n" },
+      { name: "a", text: "*program: missing\n" },
       { name: "a", text: "" },
     ],
     { skipped: [{ path: "x", reason: "hidden file" }] },
   )
   assert.deepEqual(
     graph.warnings.map(w => w.type),
-    ["duplicate", "dynamic", "external", "skipped"],
+    ["duplicate", "external", "skipped"],
   )
 })

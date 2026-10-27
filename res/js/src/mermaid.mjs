@@ -23,16 +23,12 @@ export function toMermaid(graph, { direction = "TD" } = {}) {
   const ids = new Map(names.map((name, i) => [name, `n${i}`]))
   const lines = [`flowchart ${direction}`]
   let hasExternal = false
-  let hasDynamic = false
 
   for (const name of names) {
     const node = graph.nodes.get(name)
     let line = `    ${ids.get(name)}["${escapeLabel(name)}"]`
 
-    if (node.dynamic) {
-      line += ":::dynamic"
-      hasDynamic = true
-    } else if (!node.inZip) {
+    if (!node.inZip) {
       line += ":::external"
       hasExternal = true
     }
@@ -63,7 +59,6 @@ export function toMermaid(graph, { direction = "TD" } = {}) {
   }
 
   if (hasExternal) lines.push("    classDef external stroke-dasharray: 5 5")
-  if (hasDynamic) lines.push("    classDef dynamic stroke-dasharray: 2 2")
 
   return lines.join("\n")
 }

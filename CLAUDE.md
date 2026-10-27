@@ -16,6 +16,9 @@ Static, client-side site: drop a GuidedTrack "Package code" zip, get a Mermaid f
 - Mermaid's default SVG sizing shrinks big graphs to the container width; `sizeDiagram` in `main.mjs` switches to natural size when "Fit to width" (on by default) is unticked.
 - Mermaid is initialised with top-level `htmlLabels: false` so labels are SVG `<text>` (one `tspan.row` per wrapped line), not HTML in `foreignObject`. HTML labels taint the canvas and break the PNG export. In text mode `&quot;` is not decoded, so `fixQuotes` patches the rendered text nodes.
 - `*.zip` is gitignored on purpose: sample zips contain the user's program source.
+- `*program:` / `*switch:` names are literal text: in the GuidedTrack compiler both nodes use `RawInlineText`, not the interpolating `InlineText`, so `{variable}` is never substituted. Do not add "dynamic target" handling; a braces name is just a missing program.
+- GuidedTrack's "Package code" zip includes every transitively referenced program the downloading user can read (`Contents#zip` in the Rails app), so missing programs mean no read access, not necessarily foreign ownership.
+- `guidedtrack-web/` is a temporary, untracked copy of the GuidedTrack Rails app for reference. It is gitignored and excluded from lint and tests (`pnpm test` is scoped to `test/*.test.mjs` for that reason).
 - ESLint's `css/use-baseline` rule rejects non-baseline CSS (e.g. `resize`, `ui-monospace`); `docs/` is excluded from lint and prettier.
 
 ## Commands

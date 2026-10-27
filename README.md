@@ -9,9 +9,11 @@ Open `index.html` from any static host (or `pnpm serve` and visit `http://localh
 - the rendered diagram, fitted to the page width by default (untick "Fit to width" to see it at natural size in a scrollable box), with a top-to-bottom / left-to-right toggle;
 - Download SVG and Download PNG buttons (the PNG is rendered at 2x, capped at 16,000 pixels per side);
 - the Mermaid source, with Copy and Download buttons;
-- notes about programs that are referenced but missing from the zip, calls whose target is a variable, and files that were skipped.
+- notes about programs that are referenced but missing from the zip, and files that were skipped.
 
-Solid nodes are programs in the zip. Dashed nodes are referenced but not included (for example shared `- public` library programs you do not own). Dotted nodes are `*program: {variable}` calls that cannot be resolved statically. Solid arrows are `*program:` calls; dotted labelled arrows are `*switch:` transfers.
+Solid nodes are programs in the zip. Dashed nodes are referenced but not included (for example shared `- public` library programs you cannot read). Solid arrows are `*program:` calls; dotted labelled arrows are `*switch:` transfers.
+
+`*program:` and `*switch:` take the program name as literal text; `{variable}` is not interpolated there (verified in the GuidedTrack compiler, where both keywords use `RawInlineText` rather than the interpolating `InlineText`). A name with braces is therefore just a program that does not exist.
 
 ## Develop
 
@@ -34,4 +36,4 @@ Learned from a real download:
 - a `/` in a program name is stored as `∕` (U+2215);
 - file names are UTF-8 but the zip's UTF-8 flag is unset, so naive readers see mojibake;
 - line endings are a mix of CRLF and LF;
-- the zip only contains programs you own, so calls into other people's programs show up as dashed external nodes.
+- the zip contains the program and every transitively referenced program that the downloading user has read permission on, so calls into programs you cannot read show up as dashed external nodes.

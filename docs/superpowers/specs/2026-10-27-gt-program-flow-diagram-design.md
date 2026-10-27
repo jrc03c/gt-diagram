@@ -127,3 +127,7 @@ Single page, `index.html` plus `res/css/global.css`.
 - Edge labels with call counts.
 - Clicking a node to view that program's source.
 - Collapsing the `- public` library programs into a single node.
+
+## Revisions
+
+- 2026-10-27: dynamic (`{variable}`) target nodes were removed. The GuidedTrack compiler takes `*program:` and `*switch:` names as raw, uninterpolated text, so such a target is simply a program that does not exist and is shown as an ordinary external node. Label escaping uses HTML entities rather than `#quot;` codes. Labels render as SVG text (`htmlLabels: false`) to support SVG and PNG export. "Fit to width" is on by default.

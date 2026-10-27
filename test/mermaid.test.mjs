@@ -50,7 +50,7 @@ test("node ids follow code-point order of names, not file order", () => {
   )
 })
 
-test("external and dynamic nodes get classes and classDefs only when present", () => {
+test("external nodes get a class and the classDef appears only when needed", () => {
   const graph = buildGraph([
     { name: "a", text: "*program: missing\n*program: {v}\n" },
   ])
@@ -60,20 +60,17 @@ test("external and dynamic nodes get classes and classDefs only when present", (
       "flowchart TD",
       '    n0["a"]',
       '    n1["missing"]:::external',
-      '    n2["{v}"]:::dynamic',
+      '    n2["{v}"]:::external',
       "    n0 --> n1",
       "    n0 --> n2",
       "    classDef external stroke-dasharray: 5 5",
-      "    classDef dynamic stroke-dasharray: 2 2",
     ].join("\n"),
   )
 })
 
-test("only the external classDef appears when there are no dynamic nodes", () => {
-  const graph = buildGraph([{ name: "a", text: "*program: missing\n" }])
-  const out = toMermaid(graph)
-  assert.ok(out.endsWith("    classDef external stroke-dasharray: 5 5"))
-  assert.ok(!out.includes("classDef dynamic"))
+test("no classDef when every node is in the zip", () => {
+  const graph = buildGraph([{ name: "a", text: "" }])
+  assert.ok(!toMermaid(graph).includes("classDef"))
 })
 
 test("switch edges are dotted and labelled", () => {
