@@ -1,12 +1,102 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>GuidedTrack Program Flow</title>
     <link href="res/css/global.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <div>Hello, world!</div>
+    <main>
+      <h1>GuidedTrack Program Flow</h1>
+
+      <p>
+        Upload the zip of program source files that GuidedTrack's
+        <em>Package code</em>
+        button produces, and get a Mermaid flowchart of which programs call
+        which. Only
+        <code>*program:</code>
+        and
+        <code>*switch:</code>
+        lines are read; nothing else in your programs is represented. The zip is
+        processed entirely in your browser and never leaves your computer.
+      </p>
+
+      <label id="drop-zone" class="drop-zone" for="file-input">
+        <strong>Drop a zip here</strong>
+        or click to choose one
+        <input id="file-input" type="file" accept=".zip,application/zip" />
+      </label>
+
+      <div id="error" class="error" hidden></div>
+
+      <section id="results" hidden>
+        <div class="toolbar">
+          <span id="summary"></span>
+          <span class="controls">
+            <label>
+              <input id="fit" type="checkbox" />
+              Fit to width
+            </label>
+            <label>
+              Direction
+              <select id="direction">
+                <option value="TD">Top to bottom</option>
+                <option value="LR">Left to right</option>
+              </select>
+            </label>
+          </span>
+        </div>
+
+        <div id="diagram" class="diagram"></div>
+
+        <ul class="legend">
+          <li>
+            <span class="swatch solid"></span>
+            program in the zip
+          </li>
+          <li>
+            <span class="swatch dashed"></span>
+            referenced, not in the zip
+          </li>
+          <li>
+            <span class="swatch dotted"></span>
+            variable name, unresolved
+          </li>
+          <li>
+            <span class="edge solid"></span>
+            <code>*program:</code>
+            call
+          </li>
+          <li>
+            <span class="edge dotted"></span>
+            <code>*switch:</code>
+            transfer
+          </li>
+        </ul>
+
+        <section id="warnings" hidden>
+          <h2>Notes</h2>
+          <ul id="warnings-list"></ul>
+        </section>
+
+        <section>
+          <div class="toolbar">
+            <h2>Mermaid source</h2>
+            <span>
+              <button id="copy" type="button">Copy</button>
+              <button id="download" type="button">Download .mmd</button>
+            </span>
+          </div>
+          <textarea
+            id="source"
+            readonly
+            rows="16"
+            spellcheck="false"></textarea>
+        </section>
+      </section>
+    </main>
+
     <script src="res/js/bundle.js"></script>
   </body>
 </html>

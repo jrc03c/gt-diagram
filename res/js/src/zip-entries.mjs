@@ -38,7 +38,11 @@ export function entriesFromZip(bytes) {
       continue
     }
 
-    entries.push({ path, text: strFromU8(data).replace(/^﻿/, "") })
+    const text = strFromU8(data)
+    entries.push({
+      path,
+      text: text.charCodeAt(0) === 0xfeff ? text.slice(1) : text,
+    })
   }
 
   return { entries, skipped }
