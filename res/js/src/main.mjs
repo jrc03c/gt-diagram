@@ -7,6 +7,9 @@ import { entriesFromZip } from "./zip-entries.mjs"
 mermaid.initialize({
   startOnLoad: false,
   securityLevel: "strict",
+  // Plain SVG text labels (not HTML in foreignObject) keep the exported
+  // SVG portable and let the PNG export draw it onto a canvas.
+  htmlLabels: false,
   maxEdges: 10000,
   maxTextSize: 10_000_000,
 })
@@ -28,6 +31,85 @@ function clearError() {
 
 function pluralize(n, word) {
   return `${n} ${word}${n === 1 ? "" : "s"}`
+}
+
+// In text-label mode Mermaid decodes &lt; &gt; &amp; but leaves &quot;
+// literal, so restore double quotes in the rendered labels.
+function fixQuotes(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (node.nodeValue.includes("&quot;")) {
+      node.nodeValue = node.nodeValue.replaceAll("&quot;", '"')
+    }
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// A standalone copy of the rendered SVG at natural size, regardless of
+// the "Fit to width" setting, with a white background.
+function exportSvg() {
+  const svg = $("diagram").querySelector("svg")
+  if (!svg) return null
+
+  const viewBox = svg.getAttribute("viewBox")?.split(/\s+/).map(Number)
+  if (!viewBox || viewBox.length !== 4) return null
+
+  const width = Math.ceil(viewBox[2])
+  const height = Math.ceil(viewBox[3])
+  const clone = svg.cloneNode(true)
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+  clone.setAttribute("width", width)
+  clone.setAttribute("height", height)
+  clone.style.maxWidth = "none"
+  clone.style.backgroundColor = "#ffffff"
+
+  const text =
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    new XMLSerializer().serializeToString(clone)
+
+  return { text, width, height }
+}
+
+const MAX_CANVAS_SIDE = 16000
+
+async function svgToPng({ text, width, height }) {
+  const url = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }))
+
+  try {
+    const image = new Image()
+    await new Promise((resolve, reject) => {
+      image.onload = resolve
+      image.onerror = () => reject(new Error("the SVG could not be loaded"))
+      image.src = url
+    })
+
+    const scale = Math.min(2, MAX_CANVAS_SIDE / width, MAX_CANVAS_SIDE / height)
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.ceil(width * scale)
+    canvas.height = Math.ceil(height * scale)
+
+    const ctx = canvas.getContext("2d")
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.scale(scale, scale)
+    ctx.drawImage(image, 0, 0)
+
+    const blob = await new Promise(resolve =>
+      canvas.toBlob(resolve, "image/png"),
+    )
+    if (!blob) throw new Error("the browser could not encode a PNG this large")
+    return blob
+  } finally {
+    URL.revokeObjectURL(url)
+  }
 }
 
 // Mermaid sizes its SVG to fit the container, which makes a large graph
@@ -63,6 +145,7 @@ async function render() {
       state.source,
     )
     $("diagram").innerHTML = svg
+    fixQuotes($("diagram"))
     sizeDiagram()
   } catch (error) {
     $("diagram").innerHTML = ""
@@ -172,11 +255,28 @@ $("copy").addEventListener("click", async () => {
 })
 
 $("download").addEventListener("click", () => {
-  const blob = new Blob([state.source], { type: "text/plain" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = `${state.baseName}.mmd`
-  a.click()
-  URL.revokeObjectURL(url)
+  downloadBlob(
+    new Blob([state.source], { type: "text/plain" }),
+    `${state.baseName}.mmd`,
+  )
+})
+
+$("download-svg").addEventListener("click", () => {
+  const exported = exportSvg()
+  if (!exported) return
+  downloadBlob(
+    new Blob([exported.text], { type: "image/svg+xml" }),
+    `${state.baseName}.svg`,
+  )
+})
+
+$("download-png").addEventListener("click", async () => {
+  const exported = exportSvg()
+  if (!exported) return
+  clearError()
+  try {
+    downloadBlob(await svgToPng(exported), `${state.baseName}.png`)
+  } catch (error) {
+    showError(`Could not create the PNG: ${error.message}.`)
+  }
 })

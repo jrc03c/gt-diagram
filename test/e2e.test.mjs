@@ -86,8 +86,14 @@ test(
 
       await page.waitForSelector("#diagram svg")
 
-      const labels = await page.$$eval("#diagram .nodeLabel", els =>
-        els.map(e => e.textContent).sort(),
+      const labels = await page.$$eval("#diagram g.node text", els =>
+        els
+          .map(e =>
+            [...e.querySelectorAll("tspan.row")]
+              .map(r => r.textContent)
+              .join(" "),
+          )
+          .sort(),
       )
       assert.deepEqual(labels, [
         "Clearer Thinking | Report Errors",
@@ -103,6 +109,12 @@ test(
       assert.match(
         await page.textContent("#warnings-list"),
         /"Clearer Thinking \| Report Errors" is referenced by program_a but is not in the zip\./,
+      )
+
+      assert.equal(
+        await page.isChecked("#fit"),
+        true,
+        "fit to width is on by default",
       )
 
       await page.selectOption("#direction", "LR")
@@ -123,6 +135,63 @@ test(
     }
   },
 )
+
+async function clickDownload(page, selector) {
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.click(selector),
+  ])
+  return {
+    name: download.suggestedFilename(),
+    bytes: fs.readFileSync(await download.path()),
+  }
+}
+
+test("the diagram can be downloaded as SVG and PNG", { skip }, async () => {
+  const zip = zipSync({
+    "my_programs/program_a": strToU8("*program: program_b\n"),
+    "my_programs/program_b": strToU8("Welcome!\n"),
+  })
+
+  const { server, url } = await serve()
+  const browser = await chromium.launch()
+
+  try {
+    const page = await browser.newPage()
+    await page.goto(url)
+    await page.setInputFiles("#file-input", {
+      name: "my_programs.zip",
+      mimeType: "application/zip",
+      buffer: Buffer.from(zip),
+    })
+    await page.waitForSelector("#diagram svg")
+
+    const svg = await clickDownload(page, "#download-svg")
+    assert.equal(svg.name, "my_programs.svg")
+    const svgText = svg.bytes.toString("utf8")
+    assert.ok(svgText.startsWith('<?xml version="1.0" encoding="UTF-8"?>'))
+    assert.match(svgText, /<svg[^>]* xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)
+    assert.match(svgText, /<svg[^>]* width="\d+"[^>]* height="\d+"/)
+    assert.ok(svgText.includes("program_a") && svgText.includes("program_b"))
+    assert.ok(!svgText.includes("<foreignObject"), "labels must be SVG text")
+
+    const png = await clickDownload(page, "#download-png")
+    assert.equal(png.name, "my_programs.png")
+    assert.deepEqual(
+      [...png.bytes.subarray(0, 8)],
+      [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+      "PNG signature",
+    )
+    assert.ok(png.bytes.length > 1000)
+
+    const mmd = await clickDownload(page, "#download")
+    assert.equal(mmd.name, "my_programs.mmd")
+    assert.ok(mmd.bytes.toString("utf8").startsWith("flowchart TD\n"))
+  } finally {
+    await browser.close()
+    server.close()
+  }
+})
 
 test("a non-zip file shows an error", { skip }, async () => {
   const { server, url } = await serve()

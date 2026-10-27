@@ -6,7 +6,8 @@ A static web page that takes the zip of program source files produced by GuidedT
 
 Open `index.html` from any static host (or `pnpm serve` and visit `http://localhost:8000/`), drop the zip on the page, and you get:
 
-- the rendered diagram at natural size in a scrollable box, with a "Fit to width" checkbox and a top-to-bottom / left-to-right toggle;
+- the rendered diagram, fitted to the page width by default (untick "Fit to width" to see it at natural size in a scrollable box), with a top-to-bottom / left-to-right toggle;
+- Download SVG and Download PNG buttons (the PNG is rendered at 2x, capped at 16,000 pixels per side);
 - the Mermaid source, with Copy and Download buttons;
 - notes about programs that are referenced but missing from the zip, calls whose target is a variable, and files that were skipped.
 
