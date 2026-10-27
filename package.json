@@ -15,7 +15,9 @@
   },
   "scripts": {
     "build": "node build.mjs",
+    "lint": "eslint . && prettier --check .",
     "serve": "python3 -m http.server",
+    "test": "node --test",
     "watch": "node build.mjs --watch"
   },
   "type": "module"

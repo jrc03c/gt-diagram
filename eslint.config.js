@@ -6,6 +6,7 @@ import json from "@eslint/json"
 import markdown from "@eslint/markdown"
 
 export default defineConfig([
+  { ignores: ["res/js/bundle.js", "node_modules/**", "docs/**"] },
   {
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },

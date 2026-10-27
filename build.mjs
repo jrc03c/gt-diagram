@@ -8,7 +8,7 @@ function rebuild() {
 
   try {
     execSync(
-      `npx esbuild res/js/src/main.mjs --bundle --outfile=res/js/bundle.js`,
+      `npx esbuild res/js/src/main.mjs --bundle --minify --outfile=res/js/bundle.js`,
       {
         encoding: "utf8",
       },
