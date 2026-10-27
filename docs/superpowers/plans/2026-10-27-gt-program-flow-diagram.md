@@ -36,7 +36,7 @@
 **Interfaces:**
 - Produces: `pnpm test` runs `node --test`; `pnpm build` writes a minified `res/js/bundle.js`.
 
-- [ ] **Step 1: Add the test script and confirm dependencies are declared**
+- [x] **Step 1: Add the test script and confirm dependencies are declared**
 
 `fflate` and `mermaid` were already added with `pnpm add -D fflate@0.8.3 mermaid@12.2.0`. Edit `package.json` so `scripts` reads:
 
@@ -52,7 +52,7 @@
 
 Confirm `devDependencies` contains `"fflate": "0.8.3"` and `"mermaid": "12.2.0"` (exact versions, no caret; edit if pnpm wrote carets).
 
-- [ ] **Step 2: Minify the bundle**
+- [x] **Step 2: Minify the bundle**
 
 In `build.mjs`, change the esbuild command string to:
 
@@ -60,7 +60,7 @@ In `build.mjs`, change the esbuild command string to:
 `npx esbuild res/js/src/main.mjs --bundle --minify --outfile=res/js/bundle.js`
 ```
 
-- [ ] **Step 3: Keep the bundle out of lint and format**
+- [x] **Step 3: Keep the bundle out of lint and format**
 
 Add to the top of the array in `eslint.config.js` (before the first object):
 
@@ -76,7 +76,7 @@ pnpm-lock.yaml
 node_modules
 ```
 
-- [ ] **Step 4: Write a smoke test so the runner is proven**
+- [x] **Step 4: Write a smoke test so the runner is proven**
 
 Create `test/smoke.test.mjs`:
 
@@ -89,7 +89,7 @@ test("test runner works", () => {
 })
 ```
 
-- [ ] **Step 5: Run everything**
+- [x] **Step 5: Run everything**
 
 Run: `pnpm test`
 Expected: `# pass 1`, `# fail 0`.
@@ -97,7 +97,7 @@ Expected: `# pass 1`, `# fail 0`.
 Run: `pnpm lint`
 Expected: no errors (prettier may list files to format; run `npx prettier --write .` and re-run until clean).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add package.json pnpm-lock.yaml build.mjs eslint.config.js .prettierignore test/smoke.test.mjs
@@ -115,7 +115,7 @@ git commit -m "Configure test runner, minified build, and lint ignores"
 **Interfaces:**
 - Produces: `parseReferences(text: string) -> Array<{ kind: "program" | "switch", target: string, line: number }>`. `line` is 1-based. Order is source order.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `test/parse.test.mjs`:
 
@@ -182,12 +182,12 @@ test("returns an empty array for empty input", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `node --test test/parse.test.mjs`
 Expected: FAIL with `Cannot find module` for `parse.mjs`.
 
-- [ ] **Step 3: Implement the parser**
+- [x] **Step 3: Implement the parser**
 
 Create `res/js/src/parse.mjs`:
 
@@ -220,12 +220,12 @@ export function parseReferences(text) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `node --test test/parse.test.mjs`
 Expected: 9 passing, 0 failing.
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 ```bash
 npx prettier --write res/js/src/parse.mjs test/parse.test.mjs
@@ -244,7 +244,7 @@ git commit -m "Parse *program: and *switch: references from GuidedTrack source"
 **Interfaces:**
 - Produces: `programNameFromPath(path: string) -> string`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `test/program-name.test.mjs`:
 
@@ -289,12 +289,12 @@ test("preserves spaces, hyphens, pipes and the public suffix", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `node --test test/program-name.test.mjs`
 Expected: FAIL with `Cannot find module`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `res/js/src/program-name.mjs`:
 
@@ -313,12 +313,12 @@ export function programNameFromPath(path) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `node --test test/program-name.test.mjs`
 Expected: 6 passing.
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 ```bash
 npx prettier --write res/js/src/program-name.mjs test/program-name.test.mjs
@@ -342,7 +342,7 @@ git commit -m "Derive program names from zip entry paths"
 
 Background: GuidedTrack's zip stores UTF-8 filenames without setting the UTF-8 flag (general purpose bit 11). `fflate` then decodes them as Latin-1, so `∕` (bytes E2 88 95) arrives as the three characters `â\u0088\u0095`. `fixZipName` reverses that. `fflate.zipSync` always sets the flag, so the test clears bit 11 in the raw zip bytes to reproduce the real-world input.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `test/zip-entries.test.mjs`:
 
@@ -433,12 +433,12 @@ test("entriesFromZip throws on data that is not a zip", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `node --test test/zip-entries.test.mjs`
 Expected: FAIL with `Cannot find module`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `res/js/src/zip-entries.mjs`:
 
@@ -490,12 +490,12 @@ export function entriesFromZip(bytes) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `node --test test/zip-entries.test.mjs`
 Expected: 8 passing. If the flag-clearing test fails, print `Object.keys(unzipSync(zip))` inside the test to see what fflate produced and adjust `clearUtf8Flags` offsets; the local header flag field is at byte offset 6 from the `PK\3\4` signature and the central directory flag field is at offset 8 from `PK\1\2`.
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 ```bash
 npx prettier --write res/js/src/zip-entries.mjs test/zip-entries.test.mjs
@@ -518,7 +518,7 @@ git commit -m "Decode zip entries, repairing GuidedTrack's unflagged UTF-8 names
   - Edges are deduplicated on `(from, to, kind)`; `count` is how many source lines produced the edge.
   - When two files share a name the first wins and a `duplicate` warning is added.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `test/graph.test.mjs`:
 
@@ -664,12 +664,12 @@ test("warnings are ordered duplicate, dynamic, external, skipped", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `node --test test/graph.test.mjs`
 Expected: FAIL with `Cannot find module`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `res/js/src/graph.mjs`:
 
@@ -754,12 +754,12 @@ export function buildGraph(files, { skipped = [] } = {}) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `node --test test/graph.test.mjs`
 Expected: 10 passing.
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 ```bash
 npx prettier --write res/js/src/graph.mjs test/graph.test.mjs
@@ -781,7 +781,7 @@ git commit -m "Build the program call graph with external and dynamic nodes"
   - `escapeLabel(text: string) -> string`: `&` → `&amp;`, `"` → `&quot;`, `<` → `&lt;`, `>` → `&gt;` (in that order, `&` first).
   - `toMermaid(graph, options?: { direction?: "TD" | "LR" }) -> string`. Throws `RangeError` for any other direction.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `test/mermaid.test.mjs`:
 
@@ -908,12 +908,12 @@ test("labels are escaped in the output", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `node --test test/mermaid.test.mjs`
 Expected: FAIL with `Cannot find module`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `res/js/src/mermaid.mjs`:
 
@@ -989,12 +989,12 @@ export function toMermaid(graph, { direction = "TD" } = {}) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `node --test test/mermaid.test.mjs`
 Expected: 10 passing. Then run `pnpm test` and expect every test file passing.
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 ```bash
 npx prettier --write res/js/src/mermaid.mjs test/mermaid.test.mjs
@@ -1016,7 +1016,7 @@ git commit -m "Emit deterministic Mermaid flowchart text from the program graph"
 - Consumes: `entriesFromZip`, `programNameFromPath`, `buildGraph`, `toMermaid`, `mermaid` (default export of the `mermaid` package).
 - Produces: element ids the e2e test (Task 8) relies on: `#file-input`, `#drop-zone`, `#direction`, `#results`, `#diagram`, `#source`, `#copy`, `#download`, `#warnings`, `#warnings-list`, `#error`, `#summary`.
 
-- [ ] **Step 1: Write `index.html`**
+- [x] **Step 1: Write `index.html`**
 
 ```html
 <!doctype html>
@@ -1092,7 +1092,7 @@ git commit -m "Emit deterministic Mermaid flowchart text from the program graph"
 </html>
 ```
 
-- [ ] **Step 2: Write `res/css/global.css`**
+- [x] **Step 2: Write `res/css/global.css`**
 
 ```css
 :root {
@@ -1294,7 +1294,7 @@ select {
 }
 ```
 
-- [ ] **Step 3: Write `res/js/src/main.mjs`**
+- [x] **Step 3: Write `res/js/src/main.mjs`**
 
 ```js
 import mermaid from "mermaid"
@@ -1456,7 +1456,7 @@ $("download").addEventListener("click", () => {
 })
 ```
 
-- [ ] **Step 4: Build and lint**
+- [x] **Step 4: Build and lint**
 
 Run: `pnpm build`
 Expected: `Done! 🎉` and `res/js/bundle.js` around 5 MB.
@@ -1464,13 +1464,13 @@ Expected: `Done! 🎉` and `res/js/bundle.js` around 5 MB.
 Run: `npx prettier --write index.html res/css/global.css res/js/src/main.mjs && pnpm lint`
 Expected: clean.
 
-- [ ] **Step 5: Verify in headless Chromium with the real zip**
+- [x] **Step 5: Verify in headless Chromium with the real zip**
 
 Write a throwaway script in the scratchpad (not the repo) that starts `python3 -m http.server` on a free port in the workspace, opens the page with Playwright, calls `page.setInputFiles("#file-input", "/home/ubuntu/workspace/attractiveness_face_preferences_study_dating_app.zip")`, waits for `#diagram svg`, screenshots the page to the scratchpad, and prints: the `#summary` text, the number of `.nodeLabel` elements, whether any label contains `â` or `∕` (both must be false), the first 12 lines of `#source`, and `document.documentElement.scrollWidth <= document.documentElement.clientWidth` at a 390px-wide viewport. Read the screenshot back and look at it.
 
 Expected: 38 programs in the zip, 10 external references, no mojibake labels, no horizontal page overflow at phone width (the diagram container itself may scroll internally).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add index.html res/css/global.css res/js/src/main.mjs res/js/bundle.js
@@ -1489,7 +1489,7 @@ git commit -m "Add the upload page: drop zone, rendered diagram, source, warning
 - Consumes: element ids from Task 7; `res/js/bundle.js` must be built.
 - Produces: tests that skip, with a stated reason, when Playwright is not importable or the bundle is missing; the real-zip test skips unless `GT_SAMPLE_ZIP` points at a file.
 
-- [ ] **Step 1: Write the e2e test**
+- [x] **Step 1: Write the e2e test**
 
 Create `test/e2e.test.mjs`:
 
@@ -1638,7 +1638,7 @@ test("a non-zip file shows an error", { skip }, async () => {
 })
 ```
 
-- [ ] **Step 2: Write the optional real-zip test**
+- [x] **Step 2: Write the optional real-zip test**
 
 Create `test/real-zip.test.mjs`:
 
@@ -1680,7 +1680,7 @@ test("a real GuidedTrack zip produces clean names and a graph", { skip }, () => 
 })
 ```
 
-- [ ] **Step 3: Run the whole suite both ways**
+- [x] **Step 3: Run the whole suite both ways**
 
 Run: `pnpm test`
 Expected: all unit tests pass; the two e2e tests pass (Playwright is present in the container); the real-zip test reports skipped.
@@ -1691,7 +1691,7 @@ Expected: real-zip test passes too.
 Run: `npx prettier --write test && pnpm lint`
 Expected: clean.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add test/e2e.test.mjs test/real-zip.test.mjs
@@ -1706,7 +1706,7 @@ git commit -m "Add end-to-end browser test and optional real-zip check"
 - Create: `README.md`
 - Create: `CLAUDE.md`
 
-- [ ] **Step 1: Write `README.md`**
+- [x] **Step 1: Write `README.md`**
 
 ````markdown
 # GuidedTrack Program Flow
@@ -1747,7 +1747,7 @@ Learned from a real download:
 - the zip only contains programs you own, so calls into other people's programs show up as dashed external nodes.
 ````
 
-- [ ] **Step 2: Write `CLAUDE.md`**
+- [x] **Step 2: Write `CLAUDE.md`**
 
 ````markdown
 # GuidedTrack Program Flow
@@ -1772,7 +1772,7 @@ Static, client-side site: drop a GuidedTrack "Package code" zip, get a Mermaid f
 `pnpm build`, `pnpm watch`, `pnpm serve`, `pnpm test`, `pnpm lint`. Real-zip check: `GT_SAMPLE_ZIP=./some.zip pnpm test`.
 ````
 
-- [ ] **Step 3: Lint and commit**
+- [x] **Step 3: Lint and commit**
 
 Run: `npx prettier --write README.md CLAUDE.md && pnpm lint`
 Expected: clean (the markdown ESLint plugin will flag any heading not followed by a blank line; fix if so).
@@ -1786,7 +1786,7 @@ git commit -m "Document usage, development, and the zip format quirks"
 
 ### Task 10: Final verification
 
-- [ ] **Step 1: Fresh build and full checks**
+- [x] **Step 1: Fresh build and full checks**
 
 ```bash
 pnpm build && pnpm lint && GT_SAMPLE_ZIP=./attractiveness_face_preferences_study_dating_app.zip pnpm test
@@ -1794,7 +1794,7 @@ pnpm build && pnpm lint && GT_SAMPLE_ZIP=./attractiveness_face_preferences_study
 
 Expected: build succeeds, lint clean, every test passes, none failing. Record the pass/fail counts.
 
-- [ ] **Step 2: Confirm the working tree is clean and the zip is untracked**
+- [x] **Step 2: Confirm the working tree is clean and the zip is untracked**
 
 ```bash
 git status --short
