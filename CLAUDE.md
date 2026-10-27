@@ -7,6 +7,8 @@ Static, client-side site: drop a GuidedTrack "Package code" zip, get a Mermaid f
 - `res/js/src/` — pure modules (`zip-entries`, `program-name`, `parse`, `graph`, `mermaid`) plus the browser entry `main.mjs`. Keep the pure modules free of DOM access so `node --test` can import them.
 - `res/js/bundle.js` — esbuild output, committed, about 5 MB because Mermaid is bundled. Rebuild with `pnpm build` before committing UI changes.
 - `test/*.test.mjs` — `node --test`. The e2e test imports Playwright dynamically and skips if absent; never `npm install playwright` in the container.
+- `.claude/skills/guidedtrack-builder/` — git submodule of GuidedTrack/GuidedTrackAICodingAgentSkill, the authority on GuidedTrack syntax. Run `git submodule update --init` after cloning. `AGENTS.md` points non-Claude agents here.
+- Deployed by GitHub Pages from the `main` branch root (`.nojekyll` disables Jekyll), so `res/js/bundle.js` must be committed and current. Live site: https://jrc03c.github.io/gt-diagram/
 
 ## Facts that are easy to get wrong
 

@@ -1,0 +1,3 @@
+[submodule ".claude/skills/guidedtrack-builder"]
+	path = .claude/skills/guidedtrack-builder
+	url = git@github.com:GuidedTrack/GuidedTrackAICodingAgentSkill
