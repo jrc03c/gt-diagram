@@ -8,7 +8,9 @@
     "esbuild": "^0.25.0",
     "eslint": "^9.39.1",
     "eslint-plugin-html": "^7.1.0",
+    "fflate": "0.8.3",
     "globals": "^15.11.0",
+    "mermaid": "12.2.0",
     "prettier": "^3.7.1"
   },
   "scripts": {
