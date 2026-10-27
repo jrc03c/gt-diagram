@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "@eslint/css": "^0.14.1",
+    "@eslint/js": "^9.32.0",
+    "@eslint/json": "^0.14.0",
+    "@eslint/markdown": "^7.5.1",
+    "@jrc03c/watch": "^0.0.18",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-html": "^7.1.0",
+    "globals": "^15.11.0",
+    "prettier": "^3.7.1"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "python3 -m http.server",
+    "watch": "node build.mjs --watch"
+  },
+  "type": "module"
+}
