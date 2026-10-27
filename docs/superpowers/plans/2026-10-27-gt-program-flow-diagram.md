@@ -1708,7 +1708,7 @@ git commit -m "Add end-to-end browser test and optional real-zip check"
 
 - [ ] **Step 1: Write `README.md`**
 
-```markdown
+````markdown
 # GuidedTrack Program Flow
 
 A static web page that takes the zip of program source files produced by GuidedTrack's **Package code** button and draws a [Mermaid](https://mermaid.js.org/) flowchart of which programs call which. Only `*program:` (call and return) and `*switch:` (transfer without return) lines are read. Everything runs in the browser; the zip never leaves your computer.
@@ -1745,11 +1745,11 @@ Learned from a real download:
 - file names are UTF-8 but the zip's UTF-8 flag is unset, so naive readers see mojibake;
 - line endings are a mix of CRLF and LF;
 - the zip only contains programs you own, so calls into other people's programs show up as dashed external nodes.
-```
+````
 
 - [ ] **Step 2: Write `CLAUDE.md`**
 
-```markdown
+````markdown
 # GuidedTrack Program Flow
 
 Static, client-side site: drop a GuidedTrack "Package code" zip, get a Mermaid flowchart of `*program:` / `*switch:` references between programs. Design: `docs/superpowers/specs/2026-10-27-gt-program-flow-diagram-design.md`.
@@ -1770,7 +1770,7 @@ Static, client-side site: drop a GuidedTrack "Package code" zip, get a Mermaid f
 ## Commands
 
 `pnpm build`, `pnpm watch`, `pnpm serve`, `pnpm test`, `pnpm lint`. Real-zip check: `GT_SAMPLE_ZIP=./some.zip pnpm test`.
-```
+````
 
 - [ ] **Step 3: Lint and commit**
 
